@@ -12,7 +12,7 @@ pipeline {
     APP_NAME = "register-app-pipeline"
 
     // Docker Hub username
-    DOCKER_USER = "hndevghazali"
+    DOCKER_USER = ""
 
     // Image ka base naam
     IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
@@ -71,6 +71,7 @@ pipeline {
                 sh 'mvn test'
             }
         }
+        // it takes a lots of time owasp
 
         // stage("Dependency Vulnerability Scan (OWASP)") {
         //     steps {
