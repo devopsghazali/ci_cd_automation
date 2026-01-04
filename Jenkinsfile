@@ -125,6 +125,25 @@ pipeline {
         }
     }
 }
+        stage("Update GitOps Repo") {
+  steps {
+    withCredentials([usernamePassword(
+      credentialsId: 'github',
+      usernameVariable: 'GIT_USER',
+      passwordVariable: 'GIT_TOKEN'
+    )]) {
+      sh """
+        git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/devopsghazali/ci_cd_automation.git
+        cd ci_cd_automation/k8s
+        sed -i 's|image: .*|image: hndevghazali/register-app:${FIXED_TAG}|' deployment.yaml
+        git add deployment.yaml
+        git commit -m "Update image to ${FIXED_TAG}"
+        git push
+      """
+    }
+  }
+}
+
 
     }
 }
