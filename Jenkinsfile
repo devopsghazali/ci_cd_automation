@@ -125,7 +125,7 @@ pipeline {
         }
     }
 }
-        stage("Update GitOps Repo") {
+       stage("Update GitOps Repo") {
   steps {
     withCredentials([usernamePassword(
       credentialsId: 'github',
@@ -133,16 +133,17 @@ pipeline {
       passwordVariable: 'GIT_TOKEN'
     )]) {
       sh """
-        git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/devopsghazali/ci_cd_automation.git
-        cd ci_cd_automation/k8s
+        git clone https://${GIT_USER}:${GIT_TOKEN}@github.com/devopsghazali/k8s-argocd.git
+        cd k8s-argocd/apps/register-app
         sed -i 's|image: .*|image: hndevghazali/register-app:${FIXED_TAG}|' deployment.yaml
         git add deployment.yaml
         git commit -m "Update image to ${FIXED_TAG}"
-        git push
+        git push origin main
       """
     }
   }
 }
+
 
 
     }
