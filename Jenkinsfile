@@ -6,10 +6,28 @@ pipeline {
         jdk 'java-17'
         maven 'maven-3'
     }
-
     environment {
-        SONAR_TOKEN = credentials('sonar-token')
-    }
+
+    // App info
+    APP_NAME = "register-app-pipeline"
+
+    // Docker Hub username
+    DOCKER_USER = "hndevghazali"
+
+    // Image ka base naam
+    IMAGE_NAME = "${DOCKER_USER}/${APP_NAME}"
+
+    // 🔒 FIXED TAG (kabhi change nahi hota)
+    // Har build mein naya banega
+    FIXED_TAG = "1.0.0-${BUILD_NUMBER}"
+
+    // 🔄 ROLLING TAG (hamesha latest)
+    ROLLING_TAG = "latest"
+    SONAR_TOKEN = credentials('sonar-token')
+}
+
+
+
 
     stages {
 
@@ -89,5 +107,24 @@ pipeline {
                 sh 'mvn package'
             }
         }
+        stage("Build & Push Docker Image") {
+    steps {
+        script {
+            docker.withRegistry('https://registry.hub.docker.com', 'hn') {
+
+                def image = docker.build(
+                    "${IMAGE_NAME}:${FIXED_TAG}"
+                )
+
+                // 🔒 Fixed version push
+                image.push()
+
+                // 🔄 Rolling tag push
+                image.push("${ROLLING_TAG}")
+            }
+        }
+    }
+}
+
     }
 }
